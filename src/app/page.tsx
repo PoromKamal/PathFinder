@@ -1,5 +1,4 @@
 import PathGrid from '@/components/PathGrid';
-import Image from 'next/image'
 import {BoardEnum, BoardConfig, BoardIdx} from "../utils/BoardConfig"
 
 export default function Home() {
