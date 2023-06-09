@@ -22,7 +22,7 @@ export default function PathGrid(props: PathGridProps){
   const [endIdx, setEndIdx] = useState({row: BoardConfig.default_end.row, 
                                       column: BoardConfig.default_end.column});
   const [isLocked , setIsLocked] = useState(false);
-  
+  const resetGrid = grid.map(row => row.map(cell => cell === BoardEnum.VISITED ? BoardEnum.EMPTY : cell));
   const board_colour_map = {
     [BoardEnum.EMPTY] : "bg-white",
     [BoardEnum.WALL] : "bg-black",
@@ -40,13 +40,24 @@ export default function PathGrid(props: PathGridProps){
         newGrid[point.row][point.column] = BoardEnum.VISITED;
       });
       setGrid(newGrid);
-      alert("Path found!");
       setIsLocked(true);
+      alert("Path found!");
     } else {
       // Handle the case where no path is found
       alert("No path found.");
     }
   };
+
+  const handleReset = () => {
+    resetGrid.forEach(row => row.fill(BoardEnum.EMPTY));
+    resetGrid[BoardConfig.default_start.row][BoardConfig.default_start.column] = BoardEnum.START;
+    resetGrid[BoardConfig.default_end.row][BoardConfig.default_end.column] = BoardEnum.END;
+    setStartIdx({row: BoardConfig.default_start.row, column: BoardConfig.default_start.column});
+    setEndIdx({row: BoardConfig.default_end.row, column: BoardConfig.default_end.column});
+    setIsLocked(false);
+    setGrid(resetGrid);
+
+  }
 
   const handle_grid_enter = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, row: Number, column: Number) =>{
     if(!isMouseDown || is_start_end_collided(row, column) || isLocked)
@@ -167,6 +178,7 @@ export default function PathGrid(props: PathGridProps){
       </div>
       <div className="flex items-center justify-center" style={{margin: '2rem'}}>
         <button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={handleBFS}>Find Path</button>
+        <button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={handleReset}>Reset Grid</button>
       </div>
 
 
