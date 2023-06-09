@@ -22,7 +22,8 @@ export default function PathGrid(props: PathGridProps){
   const [endIdx, setEndIdx] = useState({row: BoardConfig.default_end.row, 
                                       column: BoardConfig.default_end.column});
   const [isLocked , setIsLocked] = useState(false);
-  const resetGrid = grid.map(row => row.map(cell => cell === BoardEnum.VISITED ? BoardEnum.EMPTY : cell));
+  const resetGrid = grid.map(row => [...row]);
+  
   const board_colour_map = {
     [BoardEnum.EMPTY] : "bg-white",
     [BoardEnum.WALL] : "bg-black",
