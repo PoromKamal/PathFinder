@@ -10,7 +10,7 @@ export const BoardEnum = {
 export const BoardConfig = {
   rows: 20,
   columns: 40,
-  default_start: {row: 0, column: 0},
+  default_start: {row: 10, column: 0},
   default_end: {row: 10, column: 39},
 } 
 

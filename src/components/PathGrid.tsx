@@ -1,10 +1,12 @@
 "use client";
-import React, {useState, useEffect} from "react"
-import {BoardEnum, BoardConfig, BoardIdx} from "../utils/BoardConfig"
-import { Tooltip, IconButton } from "@mui/material";
+import React, {useState, useCallback} from "react"
+import {BoardEnum, BoardConfig} from "../utils/BoardConfig"
+import {IconButton } from "@mui/material";
 import HelpIcon from '@mui/icons-material/Help';
 import { HtmlTooltip } from "./HelpTooltip";
 import Typography from '@mui/material/Typography';
+import { bfs } from '../algorithms/BFS';
+
 
 interface PathGridProps {
   grid: Number[][];
@@ -19,6 +21,7 @@ export default function PathGrid(props: PathGridProps){
                                         column: BoardConfig.default_start.column});
   const [endIdx, setEndIdx] = useState({row: BoardConfig.default_end.row, 
                                       column: BoardConfig.default_end.column});
+  const [isLocked , setIsLocked] = useState(false);
   
   const board_colour_map = {
     [BoardEnum.EMPTY] : "bg-white",
@@ -28,8 +31,38 @@ export default function PathGrid(props: PathGridProps){
     [BoardEnum.VISITED] : "bg-blue-500",
   }
 
+  const handlePathFind = (algorithm: Function) => {
+      const path = algorithm(grid, startIdx, endIdx);
+      const newGrid = [...grid];
+      if (path && !isLocked) {
+        // Visualize the path
+        path.forEach((point: { row: Number; column: Number; }, index: Number) => {
+          // skip first and last point
+          if (index === path.length - 1) return;
+          newGrid[Number(point.row)][Number(point.column)] = BoardEnum.VISITED;
+        });
+        setGrid(newGrid);
+        setIsLocked(true);
+        alert("Path found!");
+      } else {
+        // Handle the case where no path is found
+        alert("No path found.");
+      }
+  };
+
+  const handleReset = () => {
+    grid.forEach(row => row.fill(BoardEnum.EMPTY));
+    grid[BoardConfig.default_start.row][BoardConfig.default_start.column] = BoardEnum.START;
+    grid[BoardConfig.default_end.row][BoardConfig.default_end.column] = BoardEnum.END;
+    setStartIdx({row: BoardConfig.default_start.row, column: BoardConfig.default_start.column});
+    setEndIdx({row: BoardConfig.default_end.row, column: BoardConfig.default_end.column});
+    setIsLocked(false);
+    setGrid(grid);
+
+  }
+
   const handle_grid_enter = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, row: Number, column: Number) =>{
-    if(!isMouseDown || is_start_end_collided(row, column))
+    if(!isMouseDown || is_start_end_collided(row, column) || isLocked)
       return;
 
     if(isStartSelected){
@@ -65,13 +98,12 @@ export default function PathGrid(props: PathGridProps){
 
   const handle_mouse_leave = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, row: Number, column: Number) => {
     const target = e.relatedTarget as HTMLDivElement;
-    if(!target)
+    if(!target || isLocked)
       return;
 
     if(target.hasAttribute("cell-type")){
       const row = Number(target.getAttribute("row-grid"));
       const col = Number(target.getAttribute("col-grid"));
-      console.log(row, col, endIdx.row, endIdx.column)
       if(is_start_end_collided(row, col))
         return;
     }
@@ -91,6 +123,8 @@ export default function PathGrid(props: PathGridProps){
   }
 
   const handle_mouse_down = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, row: Number, column: Number) => {
+    if (isLocked)
+      return;
     setIsMouseDown(true);
     const cell_type = Number(e.currentTarget.getAttribute("cell-type"));
     colour_wall(cell_type, row, column);
@@ -102,6 +136,8 @@ export default function PathGrid(props: PathGridProps){
   }
 
   const handle_mouse_up = (row: Number, column: Number) => {
+    if (isLocked)
+      return;
     setIsMouseDown(false)
     const temp_grid = [...grid];
 
@@ -111,7 +147,6 @@ export default function PathGrid(props: PathGridProps){
     if(isStartSelected){
       setIsStartSelected (false);
       temp_grid[startIdx.row][startIdx.column] = BoardEnum.EMPTY;
-      // Grrrrr
       temp_grid[Number(row)][Number(column)] = BoardEnum.START;
       setStartIdx({row: Number(row), column: Number(column)});
     } else if(isEndSelected){
@@ -123,6 +158,7 @@ export default function PathGrid(props: PathGridProps){
     setGrid (temp_grid);
   }
 
+
   return (
     <>
     <div className="flex-col m-auto text-lg">
@@ -130,7 +166,6 @@ export default function PathGrid(props: PathGridProps){
         <div>
           Rendering a {grid.length}x{grid[0].length} grid
         </div>
-
         <div>
           <HtmlTooltip title={ <React.Fragment>
             <Typography color="inherit">Click on the grid to add walls!</Typography>
@@ -142,6 +177,11 @@ export default function PathGrid(props: PathGridProps){
           </HtmlTooltip>
         </div>
       </div>
+      <div className="flex items-center justify-center" style={{margin: '2rem'}}>
+        <button id="bfs" className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={() => handlePathFind(bfs)}>BFS</button>
+        <button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={handleReset}>Reset Grid</button>
+      </div>
+
 
       {grid.map((row, i) => {
           return <div key={i} className="flex" draggable={false}>
