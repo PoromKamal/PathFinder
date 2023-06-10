@@ -39,7 +39,11 @@ export default function PathGrid(props: PathGridProps){
         // Visualize the path
         path.forEach((point: { row: Number; column: Number; }, index: Number) => {
           if (index === 0) return;
-          setTimeout(()=>{visitNode(point)}, 20 * Number(index));
+          
+          setTimeout( () =>{
+            visitNode(point)
+          }, 20 * Number(index));
+
         });
       } else {
         // Handle the case where no path is found
