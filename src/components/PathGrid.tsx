@@ -33,7 +33,6 @@ export default function PathGrid(props: PathGridProps){
 
   const handlePathFind = (algorithm: Function) => {
       const path = algorithm(grid, startIdx, endIdx);
-      console.log(path);
       const newGrid = [...grid];
       if (path && !isLocked) {
         // Visualize the path
