@@ -68,7 +68,7 @@ export function bfs(grid: Number[][], start: Point, end: Point) {
             let currentParent = parents[pointToString(currentPoint)];
         
             while (currentParent) {
-                pathCoordinates.push(currentParent);
+                pathCoordinates.unshift(currentParent);
                 currentParent = parents[pointToString(currentParent)];
             }
         

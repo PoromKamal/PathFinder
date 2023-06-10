@@ -35,20 +35,27 @@ export default function PathGrid(props: PathGridProps){
       const path = algorithm(grid, startIdx, endIdx);
       const newGrid = [...grid];
       if (path && !isLocked) {
+        setIsLocked(true);
         // Visualize the path
         path.forEach((point: { row: Number; column: Number; }, index: Number) => {
-          // skip first and last point
-          if (index === path.length - 1) return;
-          newGrid[Number(point.row)][Number(point.column)] = BoardEnum.VISITED;
+          if (index === 0) return;
+          
+          setTimeout( () =>{
+            visitNode(point)
+          }, 20 * Number(index));
+
         });
-        setGrid(newGrid);
-        setIsLocked(true);
-        alert("Path found!");
       } else {
         // Handle the case where no path is found
         alert("No path found.");
       }
   };
+
+  const visitNode = (node: { row: Number; column: Number; }) => {
+    const newGrid = [...grid];
+    newGrid[Number(node.row)][Number(node.column)] = BoardEnum.VISITED;
+    setGrid(newGrid);
+  }
 
   const handleReset = () => {
     grid.forEach(row => row.fill(BoardEnum.EMPTY));
