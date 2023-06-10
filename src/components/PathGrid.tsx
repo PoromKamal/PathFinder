@@ -1,5 +1,5 @@
 "use client";
-import React, {useState} from "react"
+import React, {useState, useCallback} from "react"
 import {BoardEnum, BoardConfig} from "../utils/BoardConfig"
 import {IconButton } from "@mui/material";
 import HelpIcon from '@mui/icons-material/Help';
@@ -22,7 +22,6 @@ export default function PathGrid(props: PathGridProps){
   const [endIdx, setEndIdx] = useState({row: BoardConfig.default_end.row, 
                                       column: BoardConfig.default_end.column});
   const [isLocked , setIsLocked] = useState(false);
-  const resetGrid = [...grid];
   
   const board_colour_map = {
     [BoardEnum.EMPTY] : "bg-white",
@@ -32,31 +31,36 @@ export default function PathGrid(props: PathGridProps){
     [BoardEnum.VISITED] : "bg-blue-500",
   }
 
-  const handleBFS = () => {
-    const path = bfs(grid, startIdx, endIdx);
-    const newGrid = [...grid];
-    if (path && !isLocked) {
-      // Visualize the path
-      path.slice(0, path.length - 1).forEach(point => {
-        newGrid[point.row][point.column] = BoardEnum.VISITED;
-      });
-      setGrid(newGrid);
-      setIsLocked(true);
-      alert("Path found!");
-    } else {
-      // Handle the case where no path is found
-      alert("No path found.");
+  const handlePathFind = useCallback((algorithm: String) => {
+    if (algorithm === "bfs"){
+      const path = bfs(grid, startIdx, endIdx);
+      const newGrid = [...grid];
+      if (path && !isLocked) {
+        // Visualize the path
+        path.forEach((point, index) => {
+          // skip first and last point
+          if (index === path.length - 1) return;
+          newGrid[point.row][point.column] = BoardEnum.VISITED;
+        });
+        setGrid(newGrid);
+        setIsLocked(true);
+        alert("Path found!");
+      } else {
+        // Handle the case where no path is found
+        alert("No path found.");
+      }
     }
-  };
+
+  }, [startIdx, endIdx]);
 
   const handleReset = () => {
-    resetGrid.forEach(row => row.fill(BoardEnum.EMPTY));
-    resetGrid[BoardConfig.default_start.row][BoardConfig.default_start.column] = BoardEnum.START;
-    resetGrid[BoardConfig.default_end.row][BoardConfig.default_end.column] = BoardEnum.END;
+    grid.forEach(row => row.fill(BoardEnum.EMPTY));
+    grid[BoardConfig.default_start.row][BoardConfig.default_start.column] = BoardEnum.START;
+    grid[BoardConfig.default_end.row][BoardConfig.default_end.column] = BoardEnum.END;
     setStartIdx({row: BoardConfig.default_start.row, column: BoardConfig.default_start.column});
     setEndIdx({row: BoardConfig.default_end.row, column: BoardConfig.default_end.column});
     setIsLocked(false);
-    setGrid(resetGrid);
+    setGrid(grid);
 
   }
 
@@ -103,7 +107,6 @@ export default function PathGrid(props: PathGridProps){
     if(target.hasAttribute("cell-type")){
       const row = Number(target.getAttribute("row-grid"));
       const col = Number(target.getAttribute("col-grid"));
-      console.log(row, col, endIdx.row, endIdx.column)
       if(is_start_end_collided(row, col))
         return;
     }
@@ -178,7 +181,7 @@ export default function PathGrid(props: PathGridProps){
         </div>
       </div>
       <div className="flex items-center justify-center" style={{margin: '2rem'}}>
-        <button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={handleBFS}>Find Path</button>
+        <button id="bfs" className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={(e) => handlePathFind((e.target as HTMLElement).id)}>BFS</button>
         <button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={handleReset}>Reset Grid</button>
       </div>
 

@@ -14,6 +14,40 @@ function pointToString(point: Point): string {
     return `${point.row},${point.column}`;
 }
 
+// Helper function for checking point validity
+function isValid(newRow: number, newColumn: number, rows: number, columns: number, visited: boolean[][], grid: Number[][], BoardEnum: any): boolean {
+    return (
+      newRow >= 0 &&
+      newRow < rows &&
+      newColumn >= 0 &&
+      newColumn < columns &&
+      !visited[newRow][newColumn] &&
+      grid[newRow][newColumn] !== BoardEnum.WALL
+    );
+  }
+
+function exploreDirections(
+    currentPoint: Point,
+    rows: number,
+    columns: number,
+    visited: boolean[][],
+    grid: Number[][],
+    queue: Point[],
+    parents: ParentMap,
+  ) {
+    directions.forEach(({row, column}) => {
+      const newRow = currentPoint.row + row;
+      const newColumn = currentPoint.column + column;
+  
+      if (isValid(newRow, newColumn, rows, columns, visited, grid, BoardEnum)) {
+        const newPoint: Point = { row: newRow, column: newColumn };
+        queue.push(newPoint);
+        visited[newRow][newColumn] = true;
+        parents[pointToString(newPoint)] = currentPoint;
+      }
+    });
+  }
+
 export function bfs(grid: Number[][], start: Point, end: Point) {
     const rows = grid.length;
     const columns = grid[0].length;
@@ -32,23 +66,17 @@ export function bfs(grid: Number[][], start: Point, end: Point) {
             // found the destination
             let pathCoordinates: Point[] = [];
             let currentParent = parents[pointToString(currentPoint)];
+        
             while (currentParent) {
-                pathCoordinates.unshift(currentParent);
+                pathCoordinates.push(currentParent);
                 currentParent = parents[pointToString(currentParent)];
             }
-            return pathCoordinates.reverse();
+        
+            return pathCoordinates;
         }
+        
 
-        directions.forEach(direction => {
-            const newRow = currentPoint.row + direction.row;
-            const newColumn = currentPoint.column + direction.column;
-
-            if (newRow >= 0 && newRow < rows && newColumn >= 0 && newColumn < columns && !visited[newRow][newColumn] && grid[newRow][newColumn] !== BoardEnum.WALL) {
-                queue.push({ row: newRow, column: newColumn });
-                visited[newRow][newColumn] = true;
-                parents[pointToString({ row: newRow, column: newColumn })] = currentPoint;
-            }
-        });
+        exploreDirections(currentPoint, rows, columns, visited, grid, queue, parents);
     }
-    return null;
+    return [];
 }
