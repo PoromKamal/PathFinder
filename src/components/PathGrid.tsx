@@ -31,16 +31,16 @@ export default function PathGrid(props: PathGridProps){
     [BoardEnum.VISITED] : "bg-blue-500",
   }
 
-  const handlePathFind = useCallback((algorithm: String) => {
-    if (algorithm === "bfs"){
-      const path = bfs(grid, startIdx, endIdx);
+  const handlePathFind = (algorithm: Function) => {
+      const path = algorithm(grid, startIdx, endIdx);
+      console.log(path);
       const newGrid = [...grid];
       if (path && !isLocked) {
         // Visualize the path
-        path.forEach((point, index) => {
+        path.forEach((point: { row: Number; column: Number; }, index: Number) => {
           // skip first and last point
           if (index === path.length - 1) return;
-          newGrid[point.row][point.column] = BoardEnum.VISITED;
+          newGrid[Number(point.row)][Number(point.column)] = BoardEnum.VISITED;
         });
         setGrid(newGrid);
         setIsLocked(true);
@@ -49,9 +49,7 @@ export default function PathGrid(props: PathGridProps){
         // Handle the case where no path is found
         alert("No path found.");
       }
-    }
-
-  }, [startIdx, endIdx]);
+  };
 
   const handleReset = () => {
     grid.forEach(row => row.fill(BoardEnum.EMPTY));
@@ -181,7 +179,7 @@ export default function PathGrid(props: PathGridProps){
         </div>
       </div>
       <div className="flex items-center justify-center" style={{margin: '2rem'}}>
-        <button id="bfs" className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={(e) => handlePathFind((e.target as HTMLElement).id)}>BFS</button>
+        <button id="bfs" className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={() => handlePathFind(bfs)}>BFS</button>
         <button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={handleReset}>Reset Grid</button>
       </div>
 
