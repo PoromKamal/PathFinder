@@ -35,12 +35,12 @@ export default function PathGrid(props: PathGridProps){
       const path = algorithm(grid, startIdx, endIdx);
       const newGrid = [...grid];
       if (path && !isLocked) {
+        setIsLocked(true);
         // Visualize the path
         path.forEach((point: { row: Number; column: Number; }, index: Number) => {
           if (index === 0) return;
           setTimeout(()=>{visitNode(point)}, 20 * Number(index));
         });
-        setIsLocked(true);
       } else {
         // Handle the case where no path is found
         alert("No path found.");
