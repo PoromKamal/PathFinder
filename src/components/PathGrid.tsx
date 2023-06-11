@@ -165,6 +165,10 @@ export default function PathGrid(props: PathGridProps){
     setGrid (temp_grid);
   }
 
+  function isCorner(pointer: {i: number, j: number}){
+    return (pointer.i === 0 && pointer.j === 0) || (pointer.i === 0 && pointer.j === grid[0].length - 1)
+    || (pointer.i === grid.length - 1 && pointer.j === 0) || (pointer.i === grid.length - 1 && pointer.j === grid[0].length - 1);
+  }
 
   return (
     <>
@@ -192,12 +196,14 @@ export default function PathGrid(props: PathGridProps){
 
       {grid.map((row, i) => {
           return <div key={i} className="flex" draggable={false}>
-              {row.map((cell, j) => (
-                <div key={j} row-grid={i} col-grid={j} cell-type={cell} onMouseDown={(e)=>handle_mouse_down(e, i, j)} onDragStart={(e)=>e.preventDefault()}
-                    onMouseLeave={(e)=>handle_mouse_leave(e, i, j)}
-                    onMouseUp={()=>handle_mouse_up(i, j)} onMouseEnter={(e)=>handle_grid_enter(e, i, j)}
-                    className={`w-14 h-14 border border-gray-300 flex items-center justify-center ${board_colour_map[Number(cell)]}`} />
-            ))}
+              {row.map((cell, j) =>{
+                return (
+                  <div key={j} row-grid={i} col-grid={j} cell-type={cell} onMouseDown={(e)=>handle_mouse_down(e, i, j)} onDragStart={(e)=>e.preventDefault()}
+                      onMouseLeave={(e)=>handle_mouse_leave(e, i, j)}
+                      onMouseUp={()=>handle_mouse_up(i, j)} onMouseEnter={(e)=>handle_grid_enter(e, i, j)}
+                      className={`rounded-xl w-14 h-14 border border-gray-300 flex items-center justify-center ${board_colour_map[Number(cell)]}`} />
+                )
+              })}
           </div>
         })}
     </div>
