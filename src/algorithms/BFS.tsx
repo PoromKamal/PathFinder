@@ -26,7 +26,7 @@ function isValid(newRow: number, newColumn: number, rows: number, columns: numbe
     );
   }
 
-function exploreDirections(
+function bfsExploreDirections(
     currentPoint: Point,
     rows: number,
     columns: number,
@@ -76,7 +76,7 @@ export function bfs(grid: Number[][], start: Point, end: Point) {
         }
         
 
-        exploreDirections(currentPoint, rows, columns, visited, grid, queue, parents);
+        bfsExploreDirections(currentPoint, rows, columns, visited, grid, queue, parents);
     }
     return [];
 }
