@@ -1,11 +1,16 @@
 "use client";
-import React, {useState, useCallback} from "react"
-import {BoardEnum, BoardConfig} from "../utils/BoardConfig"
-import {IconButton } from "@mui/material";
+import React, { useState } from "react"
+import { BoardEnum, BoardConfig } from "../utils/BoardConfig"
+import { IconButton } from "@mui/material";
 import HelpIcon from '@mui/icons-material/Help';
 import { HtmlTooltip } from "./HelpTooltip";
 import Typography from '@mui/material/Typography';
 import { bfs } from '../algorithms/BFS';
+import { generateMazePrims } from "../mazegeneration/PrimsGenerator";
+import { generateMazeKruskal } from "../mazegeneration/KruskalsGenerator"
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
 
 
 interface PathGridProps {
@@ -31,10 +36,29 @@ export default function PathGrid(props: PathGridProps){
     [BoardEnum.VISITED] : "bg-blue-500",
   }
 
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  
+  const handleMazeGeneration = (algorithm: Function) => {
+    handleGenerateMaze(algorithm);
+    handleClose();
+  };
+
+  const handleGenerateMaze = (algorithm: Function) => {
+    setGrid(algorithm(grid.length, grid[0].length, startIdx, endIdx));
+  }
+
   const handlePathFind = (algorithm: Function) => {
       const path = algorithm([...grid], startIdx, endIdx);
-      const newGrid = [...grid];
-      if (!isLocked && path && path.length > 0) {
+      if (path && path.length > 0) {
         setIsLocked(true);
         // Visualize the path
         path.forEach((point: { row: Number; column: Number; }, index: Number) => {
@@ -65,7 +89,6 @@ export default function PathGrid(props: PathGridProps){
     setEndIdx({row: BoardConfig.default_end.row, column: BoardConfig.default_end.column});
     setIsLocked(false);
     setGrid(grid);
-
   }
 
   const handle_grid_enter = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, row: Number, column: Number) =>{
@@ -189,8 +212,21 @@ export default function PathGrid(props: PathGridProps){
         </div>
       </div>
       <div className="flex items-center justify-center" style={{margin: '2rem'}}>
-        <button id="bfs" className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={() => handlePathFind(bfs)}>BFS</button>
-        <button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', padding: '1rem'}} onClick={handleReset}>Reset Grid</button>
+        <Button id="bfs" className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} onClick={() => handlePathFind(bfs)}>BFS</Button>
+        <Button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} onClick={handleReset}>Reset Grid</Button>
+        <Button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+          Maze
+        </Button>
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={() => handleMazeGeneration(generateMazePrims)}>Generate Maze (Prims)</MenuItem>
+          <MenuItem onClick={() => handleMazeGeneration(generateMazeKruskal)}>Generate Maze (Kruskals)</MenuItem>
+        </Menu>
       </div>
 
 
