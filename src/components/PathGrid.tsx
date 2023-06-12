@@ -37,19 +37,34 @@ export default function PathGrid(props: PathGridProps){
   }
 
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorElAlgo, setAnchorElAlgo] = React.useState<null | HTMLElement>(null);
+  const [anchorElMaze, setAnchorElMaze] = React.useState<null | HTMLElement>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  // HandleClick and handleClose for Algo menu
+  const handleClickAlgo = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElAlgo(event.currentTarget);
   };
-  
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleCloseAlgo = () => {
+    setAnchorElAlgo(null);
+  };
+
+  // HandleClick and handleClose for Maze menu
+  const handleClickMaze = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElMaze(event.currentTarget);
+  };
+  const handleCloseMaze = () => {
+    setAnchorElMaze(null);
   };
   
   const handleMazeGeneration = (algorithm: Function) => {
     handleGenerateMaze(algorithm);
-    handleClose();
+    handleCloseMaze();
+  };
+
+
+  const handleAlgorithmGeneration = (algorithm: Function) => {
+    handlePathFind(algorithm);
+    handleCloseAlgo();
   };
 
   const handleGenerateMaze = (algorithm: Function) => {
@@ -212,21 +227,38 @@ export default function PathGrid(props: PathGridProps){
         </div>
       </div>
       <div className="flex items-center justify-center" style={{margin: '2rem'}}>
-        <Button id="bfs" className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} onClick={() => handlePathFind(bfs)}>BFS</Button>
-        <Button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} onClick={handleReset}>Reset Grid</Button>
-        <Button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-          Maze
-        </Button>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={() => handleMazeGeneration(generateMazePrims)}>Generate Maze (Prims)</MenuItem>
-          <MenuItem onClick={() => handleMazeGeneration(generateMazeKruskal)}>Generate Maze (Kruskals)</MenuItem>
-        </Menu>
+      <Button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} 
+        aria-controls="simple-menu-algo" aria-haspopup="true" onClick={handleClickAlgo}>
+        Algorithms
+      </Button>
+      <Menu
+        id="simple-menu-algo"
+        anchorEl={anchorElAlgo}
+        keepMounted
+        open={Boolean(anchorElAlgo)}
+        onClose={handleCloseAlgo}
+      >
+        <MenuItem onClick={() => handleAlgorithmGeneration(bfs)}>Breadth-First Search</MenuItem>
+      </Menu>
+
+      <Button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} onClick={handleReset}>
+        Reset Grid
+      </Button>
+
+      <Button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} 
+        aria-controls="simple-menu-maze" aria-haspopup="true" onClick={handleClickMaze}>
+        Maze
+      </Button>
+      <Menu
+        id="simple-menu-maze"
+        anchorEl={anchorElMaze}
+        keepMounted
+        open={Boolean(anchorElMaze)}
+        onClose={handleCloseMaze}
+      >
+        <MenuItem onClick={() => handleMazeGeneration(generateMazePrims)}>Generate Maze (Prims)</MenuItem>
+        <MenuItem onClick={() => handleMazeGeneration(generateMazeKruskal)}>Generate Maze (Kruskals)</MenuItem>
+      </Menu>
       </div>
 
 
