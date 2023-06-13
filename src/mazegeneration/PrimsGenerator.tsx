@@ -1,9 +1,21 @@
-
-import { BoardEnum } from "../utils/BoardConfig";
+import { BoardEnum, BoardIdx } from "../utils/BoardConfig";
 
 interface Point {
   row: number;
   column: number;
+}
+
+// Helper function for checking point validity
+function isValid(newRow: number, newColumn: number, rows: number, columns: number, grid: Number[][], BoardEnum: any, startIdx: Point, endIdx: Point): boolean {
+  return (
+    newRow >= 0 &&
+    newRow < rows &&
+    newColumn >= 0 &&
+    newColumn < columns &&
+    grid[newRow][newColumn] !== BoardEnum.WALL &&
+    !(newRow === startIdx.row && newColumn === startIdx.column) &&
+    !(newRow === endIdx.row && newColumn === endIdx.column)
+  );
 }
 
 export function generateMazePrims(rows: number, columns: number, startIdx: Point, endIdx: Point) {
@@ -25,13 +37,7 @@ export function generateMazePrims(rows: number, columns: number, startIdx: Point
       let newRow = point.row + 2 * dx[i];
       let newColumn = point.column + 2 * dy[i];
       if (
-        newRow >= 0 &&
-        newRow < rows &&
-        newColumn >= 0 &&
-        newColumn < columns &&
-        grid[newRow][newColumn] === BoardEnum.WALL &&
-        !(newRow === startIdx.row && newColumn === startIdx.column) &&
-        !(newRow === endIdx.row && newColumn === endIdx.column)
+        isValid(newRow, newColumn, rows, columns, grid, BoardEnum, startIdx, endIdx)
       ) {
         neighbors.push({ row: newRow, column: newColumn });
       }
