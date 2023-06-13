@@ -12,7 +12,7 @@ function isValid(newRow: number, newColumn: number, rows: number, columns: numbe
     newRow < rows &&
     newColumn >= 0 &&
     newColumn < columns &&
-    grid[newRow][newColumn] !== BoardEnum.WALL &&
+    grid[newRow][newColumn] === BoardEnum.WALL &&
     !(newRow === startIdx.row && newColumn === startIdx.column) &&
     !(newRow === endIdx.row && newColumn === endIdx.column)
   );
