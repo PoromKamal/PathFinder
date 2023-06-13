@@ -8,10 +8,10 @@ export const BoardEnum = {
 }
 
 export const BoardConfig = {
-  rows: 20,
-  columns: 40,
+  rows: 21,
+  columns: 41,
   default_start: {row: 10, column: 0},
-  default_end: {row: 10, column: 39},
+  default_end: {row: 10, column: 40},
 } 
 
 export interface BoardIdx {
