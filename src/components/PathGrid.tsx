@@ -82,7 +82,9 @@ export default function PathGrid(props: PathGridProps){
           setTimeout( () =>{
             visitNode(point)
           }, 20 * Number(index));
-
+          setTimeout( () => {
+            setIsLocked(false);
+          }, 20 * Number(path.length));
         });
       } else {
         // Handle the case where no path is found
@@ -241,7 +243,7 @@ export default function PathGrid(props: PathGridProps){
         <MenuItem onClick={() => handleAlgorithmGeneration(bfs)}>Breadth-First Search</MenuItem>
       </Menu>
 
-      <Button className="bg-black hover:bg-zinc-700" style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} onClick={handleReset}>
+      <Button className="bg-black hover:bg-zinc-700" disabled={isLocked ? true : false} style={{color: 'white', outline: 'solid', margin: '0.1rem', padding: '0.5rem'}} onClick={handleReset}>
         Reset Grid
       </Button>
 

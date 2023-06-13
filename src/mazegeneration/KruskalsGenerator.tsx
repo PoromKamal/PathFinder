@@ -1,4 +1,4 @@
-// KruskalMazeGenerator.ts
+
 import { BoardEnum } from "../utils/BoardConfig";
 
 interface Point {
